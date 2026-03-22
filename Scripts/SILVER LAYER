@@ -1,0 +1,124 @@
+
+-- SILVER LAYER (CLEANING + TRANSFORMATION)
+
+
+USE dwh_project;
+
+-- CUSTOMERS (CRM + ERP INTEGRATION)
+
+
+DROP TABLE IF EXISTS silver_customers;
+
+CREATE TABLE silver_customers AS
+SELECT
+    c.cst_id AS customer_id,
+    c.cst_key,
+
+    TRIM(c.cst_firstname) AS first_name,
+    TRIM(c.cst_lastname) AS last_name,
+
+    -- Normalize Gender
+    CASE 
+        WHEN UPPER(c.cst_gndr) = 'M' THEN 'Male'
+        WHEN UPPER(c.cst_gndr) = 'F' THEN 'Female'
+        ELSE 'Unknown'
+    END AS gender,
+
+    -- ERP Data
+    e.bdate,
+    l.cntry AS country,
+
+    c.cst_create_date
+
+FROM bronze_cust_info c
+
+-- Merge ERP customer data
+LEFT JOIN bronze_cust_az12 e
+    ON c.cst_key = e.cid
+
+-- Merge ERP location data
+LEFT JOIN bronze_loc_a101 l
+    ON c.cst_key = l.cid;
+
+DROP TABLE IF EXISTS silver_products;
+
+CREATE TABLE silver_products AS
+SELECT
+    prd_id,
+    prd_key,
+    prd_nm AS product_name,
+
+    -- Extract category from product key
+    LEFT(prd_key, 5) AS category_id,
+
+    -- Handle null cost
+    IFNULL(prd_cost, 0) AS cost,
+
+    -- Normalize product line
+    CASE 
+        WHEN UPPER(prd_line) = 'M' THEN 'Mountain'
+        WHEN UPPER(prd_line) = 'R' THEN 'Road'
+        WHEN UPPER(prd_line) = 'T' THEN 'Touring'
+        ELSE 'Other'
+    END AS product_line,
+
+    prd_start_dt,
+
+  
+    DATE_SUB(
+        LEAD(prd_start_dt) OVER (
+            PARTITION BY prd_key 
+            ORDER BY prd_start_dt
+        ),
+        INTERVAL 1 DAY
+    ) AS prd_end_dt
+
+FROM bronze_prd_info;
+
+
+-- SALES (DATA CLEANING)
+
+
+DROP TABLE IF EXISTS silver_sales;
+
+CREATE TABLE silver_sales AS
+SELECT
+    sls_ord_num,
+    sls_prd_key,
+    sls_cust_id,
+
+    -- Convert integer to DATE
+    STR_TO_DATE(sls_order_dt, '%Y%m%d') AS order_date,
+    STR_TO_DATE(sls_ship_dt, '%Y%m%d') AS ship_date,
+    STR_TO_DATE(sls_due_dt, '%Y%m%d') AS due_date,
+
+    sls_quantity,
+
+    -- Fix invalid price
+    CASE 
+        WHEN sls_price IS NULL OR sls_price <= 0 THEN 0
+        ELSE sls_price
+    END AS price,
+
+    -- Recalculate sales
+    sls_quantity * 
+    CASE 
+        WHEN sls_price IS NULL OR sls_price <= 0 THEN 0
+        ELSE sls_price
+    END AS sales
+
+FROM bronze_sales_details;
+
+
+-- CATEGORY (DIRECT LOAD FROM ERP)
+
+
+DROP TABLE IF EXISTS silver_category;
+
+CREATE TABLE silver_category AS
+SELECT
+    id,
+    cat,
+    subcat,
+    maintenance
+FROM bronze_px_cat;
