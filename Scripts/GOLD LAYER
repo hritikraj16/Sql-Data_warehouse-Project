@@ -1,5 +1,5 @@
 
--- GOLD LAYER (STAR SCHEMA - ANALYTICS)
+-- GOLD LAYER (STAR SCHEMA )
 
 
 USE dwh_project;
@@ -24,38 +24,31 @@ SELECT
 FROM silver_customers;
 
 
--- DIMENSION: PRODUCTS
+-- DIMENSION: PRODUCTS 
 
 
 DROP VIEW IF EXISTS dim_products;
 
 CREATE VIEW dim_products AS
 SELECT
-    ROW_NUMBER() OVER (ORDER BY prd_key) AS product_key,  -- surrogate key
-    prd_key AS product_number,
-    product_name,
-    category_id,
-    cost,
-    product_line,
-    prd_start_dt AS start_date
-FROM silver_products
-WHERE prd_end_dt IS NULL;   -- only latest records 
+    ROW_NUMBER() OVER (ORDER BY p.prd_key) AS product_key,  -- surrogate key
 
+    p.prd_key AS product_number,
+    p.product_name,
+    c.cat AS category,
+    c.subcat AS subcategory,
+    c.maintenance,
 
--- DIMENSION: CATEGORY
+    p.cost,
+    p.product_line,
+    p.prd_start_dt AS start_date
 
+FROM silver_products p
 
-DROP VIEW IF EXISTS dim_category;
+LEFT JOIN silver_category c
+    ON p.category_id = c.id
 
-CREATE VIEW dim_category AS
-SELECT
-    id AS category_id,
-    cat AS category_name,
-    subcat,
-    maintenance
-FROM silver_category;
-
-
+WHERE p.prd_end_dt IS NULL;   
 -- DIMENSION: DATE
 
 
@@ -68,7 +61,6 @@ SELECT DISTINCT
     MONTH(order_date) AS month,
     DAY(order_date) AS day
 FROM silver_sales;
-
 
 -- FACT TABLE: SALES
 
@@ -83,6 +75,7 @@ SELECT
     d.product_key,
     c.customer_key,
 
+    -- Dates
     s.order_date,
     s.ship_date,
     s.due_date,
