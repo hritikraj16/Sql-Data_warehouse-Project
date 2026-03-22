@@ -1,0 +1,152 @@
+
+-- BRONZE LAYER (RAW DATA INGESTION)
+
+
+-- Create database
+CREATE DATABASE IF NOT EXISTS dwh_project;
+USE dwh_project;
+
+-- Enable CSV loading
+SET GLOBAL local_infile = 1;
+
+-- CRM TABLES
+
+-- Customer Info
+DROP TABLE IF EXISTS bronze_cust_info;
+
+CREATE TABLE bronze_cust_info (
+    cst_id INT,
+    cst_key VARCHAR(50),
+    cst_firstname VARCHAR(50),
+    cst_lastname VARCHAR(50),
+    cst_marital_status VARCHAR(10),
+    cst_gndr VARCHAR(10),
+    cst_create_date DATE
+);
+
+-- Product Info
+DROP TABLE IF EXISTS bronze_prd_info;
+
+CREATE TABLE bronze_prd_info (
+    prd_id INT,
+    prd_key VARCHAR(50),
+    prd_nm VARCHAR(50),
+    prd_cost INT,
+    prd_line VARCHAR(10),
+    prd_start_dt DATE,
+    prd_end_dt DATE
+);
+
+-- Sales Details
+DROP TABLE IF EXISTS bronze_sales_details;
+
+CREATE TABLE bronze_sales_details (
+    sls_ord_num VARCHAR(50),
+    sls_prd_key VARCHAR(50),
+    sls_cust_id INT,
+    sls_order_dt INT,
+    sls_ship_dt INT,
+    sls_due_dt INT,
+    sls_sales INT,
+    sls_quantity INT,
+    sls_price INT
+);
+
+
+-- ERP TABLES
+
+
+-- Customer Extra Info
+DROP TABLE IF EXISTS bronze_cust_az12;
+
+CREATE TABLE bronze_cust_az12 (
+    cid VARCHAR(50),
+    bdate DATE,
+    gen VARCHAR(10)
+);
+
+-- Location Info
+DROP TABLE IF EXISTS bronze_loc_a101;
+
+CREATE TABLE bronze_loc_a101 (
+    cid VARCHAR(50),
+    cntry VARCHAR(50)
+);
+
+-- Product Category
+DROP TABLE IF EXISTS bronze_px_cat;
+
+CREATE TABLE bronze_px_cat (
+    id VARCHAR(50),
+    cat VARCHAR(50),
+    subcat VARCHAR(50),
+    maintenance VARCHAR(50)
+);
+
+-- STORED PROCEDURE: LOAD BRONZE DATA
+
+
+DELIMITER //
+
+CREATE PROCEDURE load_bronze()
+BEGIN
+
+    
+    -- LOAD CRM DATA
+  
+
+    TRUNCATE TABLE bronze_cust_info;
+
+    LOAD DATA LOCAL INFILE 'C:/data/source_crm/cust_info.csv'
+    INTO TABLE bronze_cust_info
+    FIELDS TERMINATED BY ','
+    LINES TERMINATED BY '\n'
+    IGNORE 1 ROWS;
+
+    TRUNCATE TABLE bronze_prd_info;
+
+    LOAD DATA LOCAL INFILE 'C:/data/source_crm/prd_info.csv'
+    INTO TABLE bronze_prd_info
+    FIELDS TERMINATED BY ','
+    LINES TERMINATED BY '\n'
+    IGNORE 1 ROWS;
+
+    TRUNCATE TABLE bronze_sales_details;
+
+    LOAD DATA LOCAL INFILE 'C:/data/source_crm/sales_details.csv'
+    INTO TABLE bronze_sales_details
+    FIELDS TERMINATED BY ','
+    LINES TERMINATED BY '\n'
+    IGNORE 1 ROWS;
+
+    
+    -- LOAD ERP DATA
+    
+
+    TRUNCATE TABLE bronze_cust_az12;
+
+    LOAD DATA LOCAL INFILE 'C:/data/source_erp/CUST_AZ12.csv'
+    INTO TABLE bronze_cust_az12
+    FIELDS TERMINATED BY ','
+    LINES TERMINATED BY '\n'
+    IGNORE 1 ROWS;
+
+    TRUNCATE TABLE bronze_loc_a101;
+
+    LOAD DATA LOCAL INFILE 'C:/data/source_erp/LOC_A101.csv'
+    INTO TABLE bronze_loc_a101
+    FIELDS TERMINATED BY ','
+    LINES TERMINATED BY '\n'
+    IGNORE 1 ROWS;
+
+    TRUNCATE TABLE bronze_px_cat;
+
+    LOAD DATA LOCAL INFILE 'C:/data/source_erp/PX_CAT_G1V2.csv'
+    INTO TABLE bronze_px_cat
+    FIELDS TERMINATED BY ','
+    LINES TERMINATED BY '\n'
+    IGNORE 1 ROWS;
+
+END //
+
+DELIMITER ;
