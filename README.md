@@ -20,8 +20,7 @@ Bronze Layer (Raw Tables)
 Silver Layer (Cleaned + Transformed)
       ↓
 Gold Layer (Star Schema Views)
-      ↓
-Power BI (Dashboard & Analysis)
+      
 ```
 
 ---
@@ -123,7 +122,7 @@ dim_products —— fact_sales
 * ✅ Deduplication using Window Functions
 * ✅ SCD Type 2 Implementation
 * ✅ Star Schema Modeling
-* ✅ Power BI Ready Dataset
+  
 
 ---
 
