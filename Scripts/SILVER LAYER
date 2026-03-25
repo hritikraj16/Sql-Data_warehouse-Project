@@ -4,7 +4,7 @@
 
 USE dwh_project;
 
--- CUSTOMERS (CRM + ERP INTEGRATION)
+-
 
 
 DROP TABLE IF EXISTS silver_customers;
