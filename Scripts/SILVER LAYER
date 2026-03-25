@@ -54,13 +54,7 @@ SELECT
     -- Handle null cost
     IFNULL(prd_cost, 0) AS cost,
 
-    -- Normalize product line
-    CASE 
-        WHEN UPPER(prd_line) = 'M' THEN 'Mountain'
-        WHEN UPPER(prd_line) = 'R' THEN 'Road'
-        WHEN UPPER(prd_line) = 'T' THEN 'Touring'
-        ELSE 'Other'
-    END AS product_line,
+
 
     prd_start_dt,
 
