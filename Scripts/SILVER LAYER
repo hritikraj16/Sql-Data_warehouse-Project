@@ -24,7 +24,7 @@ SELECT
         ELSE 'Unknown'
     END AS gender,
 
-    -- ERP Data
+    
     e.bdate,
     l.cntry AS country,
 
@@ -32,11 +32,11 @@ SELECT
 
 FROM bronze_cust_info c
 
--- Merge ERP customer data
+
 LEFT JOIN bronze_cust_az12 e
     ON c.cst_key = e.cid
 
--- Merge ERP location data
+
 LEFT JOIN bronze_loc_a101 l
     ON c.cst_key = l.cid;
 
