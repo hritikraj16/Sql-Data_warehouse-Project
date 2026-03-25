@@ -6,7 +6,7 @@
 This project demonstrates an **end-to-end Data Warehouse pipeline** built using **MySQL**.
 It follows a **3-layer architecture** (Bronze, Silver, Gold) and transforms raw data into a **Star Schema** for analytics and reporting.
 
----
+
 
 ## 🏗️ Architecture
 
