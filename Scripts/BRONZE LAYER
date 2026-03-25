@@ -91,13 +91,11 @@ DELIMITER //
 CREATE PROCEDURE load_bronze()
 BEGIN
 
-    
-    -- LOAD CRM DATA
   
 
     TRUNCATE TABLE bronze_cust_info;
 
-    LOAD DATA LOCAL INFILE 'C:/data/source_crm/cust_info.csv'
+    LOAD DATA LOCAL INFILE 'C:/data/cust_info.csv'
     INTO TABLE bronze_cust_info
     FIELDS TERMINATED BY ','
     LINES TERMINATED BY '\n'
@@ -105,7 +103,7 @@ BEGIN
 
     TRUNCATE TABLE bronze_prd_info;
 
-    LOAD DATA LOCAL INFILE 'C:/data/source_crm/prd_info.csv'
+    LOAD DATA LOCAL INFILE 'C:/data/prd_info.csv'
     INTO TABLE bronze_prd_info
     FIELDS TERMINATED BY ','
     LINES TERMINATED BY '\n'
@@ -113,19 +111,16 @@ BEGIN
 
     TRUNCATE TABLE bronze_sales_details;
 
-    LOAD DATA LOCAL INFILE 'C:/data/source_crm/sales_details.csv'
+    LOAD DATA LOCAL INFILE 'C:/data/sales_details.csv'
     INTO TABLE bronze_sales_details
     FIELDS TERMINATED BY ','
     LINES TERMINATED BY '\n'
     IGNORE 1 ROWS;
-
-    
-    -- LOAD ERP DATA
     
 
     TRUNCATE TABLE bronze_cust_az12;
 
-    LOAD DATA LOCAL INFILE 'C:/data/source_erp/CUST_AZ12.csv'
+    LOAD DATA LOCAL INFILE 'C:/data/CUST_AZ12.csv'
     INTO TABLE bronze_cust_az12
     FIELDS TERMINATED BY ','
     LINES TERMINATED BY '\n'
@@ -133,7 +128,7 @@ BEGIN
 
     TRUNCATE TABLE bronze_loc_a101;
 
-    LOAD DATA LOCAL INFILE 'C:/data/source_erp/LOC_A101.csv'
+    LOAD DATA LOCAL INFILE 'C:/data/LOC_A101.csv'
     INTO TABLE bronze_loc_a101
     FIELDS TERMINATED BY ','
     LINES TERMINATED BY '\n'
@@ -141,7 +136,7 @@ BEGIN
 
     TRUNCATE TABLE bronze_px_cat;
 
-    LOAD DATA LOCAL INFILE 'C:/data/source_erp/PX_CAT_G1V2.csv'
+    LOAD DATA LOCAL INFILE 'C:/data/PX_CAT_G1V2.csv'
     INTO TABLE bronze_px_cat
     FIELDS TERMINATED BY ','
     LINES TERMINATED BY '\n'
