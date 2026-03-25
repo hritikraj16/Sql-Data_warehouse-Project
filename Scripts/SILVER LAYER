@@ -67,8 +67,7 @@ SELECT
         INTERVAL 1 DAY
     ) AS prd_end_dt
 
-FROM bronze_prd_info
-where prd_end_date is null;
+FROM bronze_prd_info;
 
 
 -- SALES (DATA CLEANING)
